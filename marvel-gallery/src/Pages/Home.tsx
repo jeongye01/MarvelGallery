@@ -1,8 +1,8 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
 import { getComics, getSeries, getCharacters, getCreators, getEvents } from '../Api';
 import styled from 'styled-components';
-
+import { motion, AnimatePresence } from 'framer-motion';
 const Wrapper = styled.div``;
 const Banner = styled.div`
   padding: 100px;
@@ -32,33 +32,89 @@ const Banner = styled.div`
     }
   }
 `;
+const Slider = styled.div`
+  position: relative;
+`;
+const Row = styled(motion.div)`
+  display: grid;
+  gap: 5px;
+  grid-template-columns: repeat(6, 1fr);
+  position: absolute;
+  width: 100%;
+`;
+const Box = styled(motion.div)`
+  background-color: black;
+  height: 200px;
+  font-size: 64px;
+  color: red;
+  img {
+    width: 100%;
+    height: 100%;
+  }
+`;
 
+const rowVariants = {
+  hidden: {
+    x: window.outerWidth + 5,
+  },
+  visible: {
+    x: 0,
+  },
+  exit: {
+    x: -window.outerWidth - 5,
+  },
+};
+
+//한번에 보여주고 싶은 contents 수
+const offset = 6;
 function Home() {
-  const { data: comics, isLoading } = useQuery(['comics', '1'], getComics);
-  //const { data: data2, isLoading: isLoading2 } = useQuery(['comics', '2'], getCharacters);
-  //const { data: data3, isLoading: isLoading3 } = useQuery(['comics', '3'], getCreators);
-  //const { data: data4, isLoading: isLoading4 } = useQuery(['comics', '4'], getEvents);
-
-  //console.log('1', data1);
-  console.log('comics', comics);
-  //console.log('3', data3);
-  //console.log('4', data4);
-
+  const { data, isLoading } = useQuery(['comics', '1'], getComics);
+  const [index, setIndex] = useState(0);
+  const [leaving, setLeaving] = useState(false);
+  console.log('comics', data);
+  const incraseIndex = () => {
+    if (data) {
+      if (leaving) return;
+      toggleLeaving();
+      const maxIndex = Math.floor(data.length / offset) - 1;
+      setIndex((prev) => (prev === maxIndex ? 0 : prev + 1));
+    }
+  };
+  const toggleLeaving = () => setLeaving((prev) => !prev);
   return (
     <Wrapper>
       {isLoading ? (
         <h1>Loading...</h1>
       ) : (
         <>
-          <Banner>
+          <Banner onClick={incraseIndex}>
             <div>
-              <img src={`${comics[1].thumbnail.path}/portrait_incredible.${comics[1].thumbnail.extension}`} />
+              <img src={`${data[1].thumbnail.path}/portrait_incredible.${data[1].thumbnail.extension}`} />
             </div>
             <div>
-              <span>{comics[1].title}</span>
-              <p>{comics[1].description.substr(0, 200)}.....자세히 보기</p>
+              <span>{data[1].title}</span>
+              <p>{data[1].description.substr(0, 200)}.....자세히 보기</p>
             </div>
           </Banner>
+          <Slider>
+            <AnimatePresence initial={false} onExitComplete={toggleLeaving}>
+              <Row
+                variants={rowVariants}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                transition={{ type: 'tween', duration: 1 }}
+                key={index}
+              >
+                {data?.slice(offset * index, offset * index + offset).map((comic: any) => (
+                  <Box key={comic.id}>
+                    {' '}
+                    <img src={`${comic.thumbnail.path}/portrait_incredible.${comic.thumbnail.extension}`} />
+                  </Box>
+                ))}
+              </Row>
+            </AnimatePresence>
+          </Slider>
         </>
       )}
     </Wrapper>
