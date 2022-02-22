@@ -6,7 +6,7 @@ function Router() {
     <BrowserRouter>
       <Header />
       <Switch>
-        <Route path={'/'}>
+        <Route path={['/', '/:comicId']}>
           <Home />
         </Route>
       </Switch>

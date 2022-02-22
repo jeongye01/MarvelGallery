@@ -3,7 +3,7 @@ import reset from 'styled-reset';
 
 const GlobalStyle = createGlobalStyle`
   ${reset}
-  @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Bangers&family=Open+Sans:wght@400;600&display=swap');
   *{
     box-sizing:border-box;
   }
