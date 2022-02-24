@@ -1,10 +1,10 @@
 import styled from 'styled-components';
-
+import React from 'react';
 const Container = styled.div`
   font-family: 'Dekko', cursive;
   margin: 30px auto;
   margin-top: 130px;
-  margin-bottom: 80px;
+  margin-bottom: 50px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -61,4 +61,4 @@ function Banner({ data }: Iprops) {
   );
 }
 
-export default Banner;
+export default React.memo(Banner);

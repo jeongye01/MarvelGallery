@@ -6,6 +6,7 @@ import { motion, useAnimation, useViewportScroll } from 'framer-motion';
 import { useEffect, useState } from 'react';
 
 const Navigation = styled(motion.nav)`
+  z-index: 100;
   color: white;
   font-weight: 600;
   display: flex;
@@ -18,15 +19,6 @@ const Navigation = styled(motion.nav)`
   background-color: #f8012d;
   padding: 20px 60px;
   box-shadow: 0 1px 15px -7.5px #000000;
-`;
-
-const Logo = styled(motion.svg)`
-  margin-right: 50px;
-  width: 100px;
-  path {
-    stroke: white;
-    stroke-width: 2;
-  }
 `;
 
 const Column = styled.div`
@@ -52,9 +44,9 @@ const Column = styled.div`
     cursor: pointer;
   }
 `;
-const Title = styled(motion.div)`
-  //font-family: 'Shizuru', cursive;
-  //font-family: 'Dekko', cursive;
+const Logo = styled(motion.div)`
+  margin-right: 50px;
+
   h1 {
     font-size: 25px;
     font-family: 'Bangers', cursive;
@@ -141,9 +133,9 @@ function Header() {
   return (
     <Navigation variants={navVariants} animate={navAnimation} initial={'top'}>
       <Column>
-        <Title variants={logoVariants} whileHover="hover">
+        <Logo variants={logoVariants} whileHover="hover">
           <h1>MARVEL GALLERY</h1>
-        </Title>
+        </Logo>
 
         <Items>
           <Item isClicked={isHome !== null}>

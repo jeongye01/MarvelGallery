@@ -1,10 +1,31 @@
 import styled from 'styled-components';
+import React from 'react';
 import { motion, AnimatePresence, useViewportScroll } from 'framer-motion';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import { useState } from 'react';
 import { wrap } from 'popmotion';
 import { useQuery } from 'react-query';
 import { getComics } from '../Api';
+import { faCircleChevronRight, faCircleChevronLeft } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
+//<i class="fa-solid fa-circle-chevron-right"></i>
+
+const Header = styled.header`
+  display: flex;
+  padding: 5px;
+  margin-left: 30px;
+  h2 {
+    font-size: 35px;
+    font-family: 'Bangers', cursive;
+  }
+  button {
+    all: unset;
+    margin-left: 15px;
+    font-size: 25px;
+    cursor: pointer;
+  }
+`;
 const SSlider = styled.div`
   background-color: white;
   border-top: 5px solid black;
@@ -12,6 +33,7 @@ const SSlider = styled.div`
   height: 200px;
   display: flex;
   position: relative;
+  margin-bottom: 25px;
 `;
 const Row = styled(motion.div)`
   display: grid;
@@ -24,7 +46,7 @@ const Row = styled(motion.div)`
 const Box = styled(motion.div)`
   font-size: 64px;
   color: red;
-  padding: 5px;
+  padding: 5px 0;
   img {
     box-shadow: 0 1px 15px -7.5px #000000;
     width: 100%;
@@ -37,23 +59,21 @@ const Box = styled(motion.div)`
     transform-origin: center right;
   }
 `;
-const Category = styled.div`
-  padding: 5px;
-  margin-left: 30px;
-  font-size: 25px;
-  font-family: 'Bangers', cursive;
-`;
 
 const Info = styled(motion.div)`
-  padding: 10px;
-  background-color: gray;
+  background-color: black;
+  color: white;
   opacity: 0;
   position: absolute;
   width: 100%;
+  height: 40%;
   bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
   h4 {
-    text-align: center;
-    font-size: 18px;
+    font-size: 16px;
   }
 `;
 const Overlay = styled(motion.div)`
@@ -116,11 +136,14 @@ const infoVariants = {
 };
 
 interface Iprops {
+  category: string;
   data: [
     {
       id: number;
       thumbnail: { path: string; extension: string };
-      title: string;
+      title?: string;
+      firstName?: string;
+      name?: string;
       description: string;
     },
   ];
@@ -128,7 +151,7 @@ interface Iprops {
 
 //한번에 보여주고 싶은 contents 수
 const contents = 6;
-function Slider({ data }: Iprops) {
+function Slider({ data, category }: Iprops) {
   const history = useHistory();
   const [[page, direction], setPage] = useState([0, 0]);
   const [leaving, setLeaving] = useState(false);
@@ -152,11 +175,15 @@ function Slider({ data }: Iprops) {
   };
   return (
     <>
-      <Category>
-        Comics<button onClick={() => paginate(1)}>&larr;</button>
-        <button onClick={() => paginate(-1)}>&rarr;</button>
-      </Category>
-
+      <Header>
+        <h2>{category}</h2>
+        <button onClick={() => paginate(1)}>
+          <FontAwesomeIcon icon={faCircleChevronLeft} />
+        </button>
+        <button onClick={() => paginate(-1)}>
+          <FontAwesomeIcon icon={faCircleChevronRight} />
+        </button>
+      </Header>
       <SSlider>
         <AnimatePresence initial={false} custom={direction} onExitComplete={() => setLeaving((prev) => !prev)}>
           <Row
@@ -170,17 +197,21 @@ function Slider({ data }: Iprops) {
             }}
             key={page}
           >
-            {data?.slice(contents * (page || 0), contents * (page || 0) + contents).map((comic: any) => (
+            {data?.slice(contents * (page || 0), contents * (page || 0) + contents).map((element: any) => (
               <Box
-                layoutId={comic.id + ''}
-                onClick={() => onBoxClicked(comic.id)}
-                key={comic.id}
+                layoutId={element.id + ''}
+                onClick={() => onBoxClicked(element.id)}
+                key={element.id}
                 whileHover="hover"
                 initial="normal"
                 variants={boxVariants}
                 transition={{ type: 'tween' }}
               >
-                <img src={`${comic.thumbnail.path}.${comic.thumbnail.extension}`} />
+                <img src={`${element.thumbnail.path}.${element.thumbnail.extension}`} />
+
+                <Info variants={infoVariants}>
+                  <h4>{element.title || element.name || element.firstName}</h4>
+                </Info>
               </Box>
             ))}
           </Row>
@@ -190,4 +221,4 @@ function Slider({ data }: Iprops) {
   );
 }
 
-export default Slider;
+export default React.memo(Slider);

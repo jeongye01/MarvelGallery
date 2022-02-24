@@ -6,6 +6,9 @@ import { motion, AnimatePresence, useViewportScroll } from 'framer-motion';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import Banner from '../Components/Banner';
 import Comics from './Comics';
+import Characters from './Characters';
+import Creators from './Creators';
+import Events from './Events';
 const Wrapper = styled.div`
   //padding: 0px 60px;
 `;
@@ -25,6 +28,9 @@ function Home() {
         <>
           <Banner data={data[7]} />
           <Comics />
+          <Characters />
+          <Events />
+          <Creators />
         </>
       )}
     </Wrapper>

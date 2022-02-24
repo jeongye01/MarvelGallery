@@ -13,7 +13,7 @@ const marvel = axios.create({ baseURL });
 
 export const getComics = () => {
   return marvel
-    .get(`/comics?ts=${ts}&apikey=${PUBLIC_KEY}&hash=${hash}`)
+    .get(`/comics?ts=${ts}&apikey=${PUBLIC_KEY}&hash=${hash}&limit=100`)
     .then((response) => {
       const toReturn = response.data.data.results.filter((d: any) => {
         console.log(d.thumbnail.path.substr(-19), d.thumbnail.path.substr(-19) !== 'image_not_available');
@@ -48,14 +48,28 @@ export const getCharacters = () => {
 
 export const getCreators = () => {
   return marvel
-    .get(`/creators?ts=${ts}&apikey=${PUBLIC_KEY}&hash=${hash}`)
-    .then((response) => response.data.data.results)
+    .get(`/creators?ts=${ts}&apikey=${PUBLIC_KEY}&hash=${hash}&limit=100`)
+    .then((response) => {
+      const toReturn = response.data.data.results.filter((d: any) => {
+        console.log(d.thumbnail.path.substr(-19), d.thumbnail.path.substr(-19) !== 'image_not_available');
+        return d.thumbnail.path.substr(-19) !== 'image_not_available';
+      });
+      console.log(toReturn);
+      return toReturn;
+    })
     .catch((err) => console.log(err));
 };
 
 export const getEvents = () => {
   return marvel
-    .get(`/events?ts=${ts}&apikey=${PUBLIC_KEY}&hash=${hash}`)
-    .then((response) => response.data.data.results)
+    .get(`/events?ts=${ts}&apikey=${PUBLIC_KEY}&hash=${hash}&limit=100`)
+    .then((response) => {
+      const toReturn = response.data.data.results.filter((d: any) => {
+        console.log(d.thumbnail.path.substr(-19), d.thumbnail.path.substr(-19) !== 'image_not_available');
+        return d.thumbnail.path.substr(-19) !== 'image_not_available';
+      });
+      console.log(toReturn);
+      return toReturn;
+    })
     .catch((err) => console.log(err));
 };
