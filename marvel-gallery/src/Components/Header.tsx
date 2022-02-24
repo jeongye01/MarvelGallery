@@ -48,7 +48,7 @@ const Logo = styled(motion.div)`
   margin-right: 50px;
 
   h1 {
-    font-size: 25px;
+    font-size: 30px;
     font-family: 'Bangers', cursive;
     text-shadow: -1px -1px yellow, 1px 1px orange, 2px 2px orange;
     -webkit-transform: rotate(-10deg) skew(-10deg, 0);
@@ -136,21 +136,6 @@ function Header() {
         <Logo variants={logoVariants} whileHover="hover">
           <h1>MARVEL GALLERY</h1>
         </Logo>
-
-        <Items>
-          <Item isClicked={isHome !== null}>
-            <Link to="/">홈</Link>
-          </Item>
-          <Item isClicked={false}>
-            <Link to="/">시리즈</Link>
-          </Item>
-          <Item isClicked={false}>
-            <Link to="/">캐릭터</Link>
-          </Item>
-          <Item isClicked={false}>
-            <Link to="/">영화</Link>
-          </Item>
-        </Items>
       </Column>
 
       <Column>

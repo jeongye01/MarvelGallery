@@ -3,13 +3,8 @@ import React from 'react';
 import { motion, AnimatePresence, useViewportScroll } from 'framer-motion';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import { useState } from 'react';
-import { wrap } from 'popmotion';
-import { useQuery } from 'react-query';
-import { getComics } from '../Api';
 import { faCircleChevronRight, faCircleChevronLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-
-//<i class="fa-solid fa-circle-chevron-right"></i>
 
 const Header = styled.header`
   display: flex;
@@ -79,19 +74,46 @@ const Info = styled(motion.div)`
 const Overlay = styled(motion.div)`
   position: fixed;
   top: 0;
-  width: 100px;
-  height: 100px;
+  width: 100%;
+  height: 100%;
+  z-index: 100;
   background-color: rgba(0, 0, 0, 0.5);
   opacity: 0;
 `;
 
-const BigComic = styled(motion.div)`
+const BigContents = styled(motion.div)`
   position: absolute;
   width: 40vw;
   height: 80vh;
   left: 0;
   right: 0;
   margin: 0 auto;
+  border-radius: 15px;
+  overflow: hidden;
+  background-color: black;
+  z-index: 200;
+`;
+
+const BigCover = styled.div`
+  width: 100%;
+  background-size: cover;
+  background-position: center center;
+  height: 400px;
+`;
+
+const BigTitle = styled.h3`
+  color: white;
+  padding: 20px;
+  font-size: 30px;
+  position: relative;
+  top: -80px;
+`;
+
+const BigOverview = styled.p`
+  padding: 20px;
+  position: relative;
+  top: -80px;
+  color: white;
 `;
 
 const rowVariants = {
@@ -145,6 +167,13 @@ interface Iprops {
       firstName?: string;
       name?: string;
       description: string;
+      comics?: {
+        items: [
+          {
+            name: string;
+          },
+        ];
+      };
     },
   ];
 }
@@ -153,10 +182,13 @@ interface Iprops {
 const contents = 6;
 function Slider({ data, category }: Iprops) {
   const history = useHistory();
+  const routeMatch = useRouteMatch<{ id: string }>(`/${category}/:id`);
+  const { scrollY } = useViewportScroll();
   const [[page, direction], setPage] = useState([0, 0]);
   const [leaving, setLeaving] = useState(false);
-  const onBoxClicked = (comicId: number) => {
-    history.push(`/${comicId}`);
+  const clickedMovie = routeMatch?.params.id && data?.find((content) => content.id === +routeMatch.params.id);
+  const onBoxClicked = (id: number) => {
+    history.push(`/${category}/${id}`);
   };
   const onOverlayClick = () => history.push('/');
 
@@ -197,26 +229,48 @@ function Slider({ data, category }: Iprops) {
             }}
             key={page}
           >
-            {data?.slice(contents * (page || 0), contents * (page || 0) + contents).map((element: any) => (
+            {data?.slice(contents * (page || 0), contents * (page || 0) + contents).map((content: any) => (
               <Box
-                layoutId={element.id + ''}
-                onClick={() => onBoxClicked(element.id)}
-                key={element.id}
+                layoutId={content.id + ''}
+                onClick={() => onBoxClicked(content.id)}
+                key={content.id}
                 whileHover="hover"
                 initial="normal"
                 variants={boxVariants}
                 transition={{ type: 'tween' }}
               >
-                <img src={`${element.thumbnail.path}.${element.thumbnail.extension}`} />
+                <img src={`${content.thumbnail.path}.${content.thumbnail.extension}`} />
 
                 <Info variants={infoVariants}>
-                  <h4>{element.title || element.name || element.firstName}</h4>
+                  <h4>{content.title || content.name || content.firstName}</h4>
                 </Info>
               </Box>
             ))}
           </Row>
         </AnimatePresence>
       </SSlider>
+      {routeMatch ? (
+        <>
+          <Overlay onClick={onOverlayClick} exit={{ opacity: 0 }} animate={{ opacity: 1 }} />
+          <BigContents style={{ top: scrollY.get() + 100 }} layoutId={routeMatch.params.id}>
+            {clickedMovie && (
+              <>
+                <BigCover
+                  style={{
+                    backgroundImage: `linear-gradient(to top, black, transparent), url(${clickedMovie.thumbnail.path}.${clickedMovie.thumbnail.extension})`,
+                  }}
+                />
+                <BigTitle>{clickedMovie.title || clickedMovie.name || clickedMovie.firstName}</BigTitle>
+                <BigOverview>
+                  {clickedMovie.description ||
+                    clickedMovie?.comics?.items?.map((comic) => <span>{comic.name} </span>) ||
+                    'No Description'}
+                </BigOverview>
+              </>
+            )}
+          </BigContents>
+        </>
+      ) : null}
     </>
   );
 }

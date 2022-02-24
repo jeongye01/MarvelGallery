@@ -6,7 +6,7 @@ function Router() {
     <BrowserRouter>
       <Header />
       <Switch>
-        <Route path={['/', '/comics/:comicId', '/characters/:characterId', '/events/:eventId', '/creators/:creatorId']}>
+        <Route path={['/', '/comics/:id', '/characters/:id', '/events/:id', '/creators/:id']}>
           <Home />
         </Route>
       </Switch>
